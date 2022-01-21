@@ -43,6 +43,8 @@ COPY ./entrypoint.sh /entrypoint.sh
 ENTRYPOINT ["/usr/bin/dumb-init", "--rewrite", "15:2", "--", "/entrypoint.sh"]
 CMD ["up"]
 
+HEALTHCHECK CMD docker-compose up -d
+
 EXPOSE 80
 
 ENV NODE_ENV=development
