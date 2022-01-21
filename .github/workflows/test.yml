@@ -1,0 +1,63 @@
+# Copyright 2022 Qlever LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+name: "Test the image as a GitHub Actions service"
+
+on:
+  push:
+
+jobs:
+  build:
+    uses: qlever-llc/workflows/.github/workflows/build-and-push-service.yml@master
+    secrets:
+      dockerhub_username: ${{ secrets.DOCKERHUB_USERNAME }}
+      dockerhub_repo: ${{ secrets.DOCKER_REPO }}
+      snyk_org: ${{ secrets.SNYK_ORG }}
+      # Actual secrets
+      dockerhub_token: ${{ secrets.DOCKERHUB_TOKEN }}
+      snyk_token: ${{ secrets.SNYK_TOKEN }}
+      cosign_key: ${{ secrets.COSIGN_KEY }}
+      cosign_password: ${{ secrets.COSIGN_PASSWORD }}
+
+  test:
+    needs:
+      - build
+    runs-on: ubuntu-latest
+
+    services:
+      oada:
+        ports:
+          - 80
+        image: ghcr.io/qlever-llc/oada:sha-${GITHUB_SHA::7}
+
+    steps:
+      - name: Debug OADA
+        continue-on-error: true
+        shell: bash
+        run: docker ps
+
+      # See if it worked
+      - uses: mydea/action-wait-for-api@v1
+        with:
+          url: "https://oada/bookmarks"
+          headers: '{"Authorization": "Bearer god"}'
+          expected-status: 200
+          interval: 10
+          timeout: 300
+
+      - continue-on-error: true
+        if: ${{ failure() }}
+        shell: bash
+        run: |
+          curl -v -H "Authorization: Bearer god" https://oada/bookmarks
