@@ -30,8 +30,20 @@ jobs:
       cosign_key: ${{ secrets.COSIGN_KEY }}
       cosign_password: ${{ secrets.COSIGN_PASSWORD }}
 
+  setup:
+    runs-on: ubuntu-latest
+
+    outputs:
+      slug: ${{ steps.slug.outputs.sha7 }}
+
+    steps:
+    - name: Get short SHA
+      id: slug
+      run: echo "::set-output name=sha7::$(echo ${GITHUB_SHA} | cut -c1-7)"
+
   test:
     needs:
+      - setup
       - build
     runs-on: ubuntu-latest
 
@@ -39,7 +51,7 @@ jobs:
       oada:
         ports:
           - 80
-        image: ghcr.io/qlever-llc/oada:sha-${GITHUB_SHA::7}
+        image: ghcr.io/qlever-llc/oada:sha-${{ needs.setup.outputs.slug }}
 
     steps:
       - name: Debug OADA
