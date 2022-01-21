@@ -61,31 +61,10 @@ jobs:
           - 80
 
     steps:
-      - uses: mydea/action-wait-for-api@v1
-        if: ${{ always() }}
+      - uses: ./.github/actions/test.yml
         with:
-          url: 'http://oada/bookmarks'
-          headers: '{"Authorization": "Bearer god"}'
-          expected-status: 200
-          interval: 2
-          timeout: 10
-
-      - uses: mydea/action-wait-for-api@v1
-        if: ${{ always() }}
-        with:
-          url: "http://localhost:${{ job.services.oada.ports['80'] }}/bookmarks"
-          headers: '{"Authorization": "Bearer god"}'
-          expected-status: 200
-          interval: 2
-          timeout: 10
-
-      - name: Debug OADA
-        if: ${{ always() }}
-        continue-on-error: true
-        shell: bash
-        run: docker ps
-
-      - name: OADA logs
+          api: "http://localhost:${{ job.services.oada.ports['80'] }}"
+      - name: Print OADA logs
         if: ${{ always() }}
         continue-on-error: true
         shell: bash
@@ -95,14 +74,33 @@ jobs:
             -v "/var/run/docker.sock:/var/run/docker.sock" \
             ${{ needs.setup.outputs.image }} logs
 
-      - continue-on-error: true
-        if: ${{ failure() }}
-        shell: bash
-        run: |
-          curl -v -H "Authorization: Bearer god" http://oada/bookmarks
+  container-test:
+    needs:
+      - setup
+      - build
+    runs-on: ubuntu-latest
 
-      - continue-on-error: true
-        if: ${{ failure() }}
+    services:
+      oada:
+        image: ${{ needs.setup.outputs.image }}
+        # Needed for DooD
+        volumes:
+          - "/var/run/docker.sock:/var/run/docker.sock"
+        ports:
+          - 80
+
+    container: node
+
+    steps:
+      - uses: ./.github/actions/test.yml
+        with:
+          api: "http://oada"
+      - name: Print OADA logs
+        if: ${{ always() }}
+        continue-on-error: true
         shell: bash
         run: |
-          curl -v -H "Authorization: Bearer god" http://localhost:${{ job.services.oada.ports['80'] }}/bookmarks
+          docker run \
+            --rm \
+            -v "/var/run/docker.sock:/var/run/docker.sock" \
+            ${{ needs.setup.outputs.image }} logs
