@@ -34,12 +34,16 @@ jobs:
     runs-on: ubuntu-latest
 
     outputs:
-      slug: ${{ steps.slug.outputs.sha7 }}
+      image: ${{ steps.image.outputs.image }}
 
     steps:
-    - name: Get short SHA
-      id: slug
-      run: echo "::set-output name=sha7::$(echo ${GITHUB_SHA} | cut -c1-7)"
+    - name: Get image tag
+      id: image
+      run: |
+        SHA=${GITHUB_SHA::7}
+        # GHCR does not like upper case
+        REPO=$(${{ github.repository }} | tr '[:upper:]' '[:lower:]')
+        echo "::set-output name=image::ghcr.io/${REPO}:sha-${SHA}"
 
   test:
     needs:
@@ -49,7 +53,7 @@ jobs:
 
     services:
       oada:
-        image: ghcr.io/qlever-llc/oada:sha-${{ needs.setup.outputs.slug }}
+        image: ${{ needs.setup.outputs.image }}
         # Needed for DooD
         volumes:
           - "/var/run/docker.sock:/var/run/docker.sock"
@@ -89,7 +93,7 @@ jobs:
           docker run \
             --rm \
             -v "/var/run/docker.sock:/var/run/docker.sock" \
-            qlever-llc/oada:sha-${{ needs.setup.outputs.slug }} logs
+            ${{ needs.setup.outputs.image }} logs
 
       - continue-on-error: true
         if: ${{ failure() }}
