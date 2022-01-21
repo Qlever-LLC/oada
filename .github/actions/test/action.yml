@@ -12,27 +12,41 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-name: "Test as a GitHub Actions service"
+name: "Test an OADA API"
+
+description: "Waits for /bookmarks to be available at an OADA API"
 
 inputs:
   api:
     description: "The root of an OADA API "
     required: true
-    type: string
+  path:
+    description: "A path in the OADA API "
+    required: false
+    default: /bookmarks
+  token:
+    description: "The Snyk API token"
+    required: false
+    # Use dev token if none provided
+    default: god
 
 runs:
   using: composite
   steps:
-    - uses: mydea/action-wait-for-api@v1
+    - name: Wait for path in OADA
+      uses: mydea/action-wait-for-api@v1
       with:
-        url: '${{ inputs.api }}/bookmarks'
-        headers: '{"Authorization": "Bearer god"}'
+        url: '${{ inputs.api }}${{ inputs.path }}'
+        headers: '{"Authorization": "Bearer ${{ inputs.token }}"}'
         expected-status: 200
         interval: 2
         timeout: 10
 
-    - continue-on-error: true
+    - name: Print result of GET /bookmarks
       if: ${{ failure() }}
       shell: bash
       run: |
-        curl -v -H "Authorization: Bearer god" ${{ inputs.api }}/bookmarks
+        curl \
+          -v
+          -H "Authorization: Bearer ${{ inputs.token }}"
+          ${{ inputs.api }}${{ inputs.path }}
