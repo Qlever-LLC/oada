@@ -32,9 +32,10 @@ services:
     networks:
       pipe:
         aliases:
-          - oada
+          - oada-dood
       http_net:
         aliases:
-          - oada.local
+          # Resolve internal requests to DOMAIN
+          - ${DOMAIN}
           # Pretend to be the proxy
           - proxy

@@ -60,11 +60,11 @@ jobs:
       - uses: mydea/action-wait-for-api@v1
         if: ${{ always() }}
         with:
-          url: 'https://oada/bookmarks'
+          url: 'http://oada/bookmarks'
           headers: '{"Authorization": "Bearer god"}'
           expected-status: 200
-          interval: 10
-          timeout: 300
+          interval: 2
+          timeout: 10
 
       - uses: mydea/action-wait-for-api@v1
         if: ${{ always() }}
@@ -72,14 +72,24 @@ jobs:
           url: "http://localhost:${{ job.services.oada.ports['80'] }}/bookmarks"
           headers: '{"Authorization": "Bearer god"}'
           expected-status: 200
-          interval: 10
-          timeout: 300
+          interval: 2
+          timeout: 10
 
       - name: Debug OADA
         if: ${{ always() }}
         continue-on-error: true
         shell: bash
         run: docker ps
+
+      - name: OADA logs
+        if: ${{ always() }}
+        continue-on-error: true
+        shell: bash
+        run: |
+          docker run \
+            --rm \
+            -v "/var/run/docker.sock:/var/run/docker.sock" \
+            qlever-llc/oada:sha-${{ needs.setup.outputs.slug }} logs
 
       - continue-on-error: true
         if: ${{ failure() }}

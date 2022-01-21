@@ -35,6 +35,7 @@ ENV DOMAIN=oada.local
 COPY ./docker-compose.override.yml /qlever-oada/
 
 RUN apk add --no-cache \
+    curl \
     dumb-init \
     socat
 
@@ -43,7 +44,13 @@ COPY ./entrypoint.sh /entrypoint.sh
 ENTRYPOINT ["/usr/bin/dumb-init", "--rewrite", "15:2", "--", "/entrypoint.sh"]
 CMD ["up"]
 
-HEALTHCHECK CMD docker-compose up -d
+# Wait for /bookmarks to be up
+HEALTHCHECK --start-period=10s --interval=2s CMD \
+    curl \
+    --fail \
+    -H "Authorization: Bearer god" \
+    "http://localhost/bookmarks" \
+    || exit 1
 
 EXPOSE 80
 
