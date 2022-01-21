@@ -45,7 +45,7 @@ ENTRYPOINT ["/usr/bin/dumb-init", "--rewrite", "15:2", "--", "/entrypoint.sh"]
 CMD ["up"]
 
 # Wait for /bookmarks to be up
-HEALTHCHECK --start-period=10s --interval=2s CMD \
+HEALTHCHECK --start-period=30s --interval=2s CMD \
     curl \
     --fail \
     -H "Authorization: Bearer god" \
