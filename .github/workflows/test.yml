@@ -57,10 +57,19 @@ jobs:
           - 80
 
     steps:
-      # See if it worked
       - uses: mydea/action-wait-for-api@v1
+        if: ${{ always() }}
         with:
-          url: "https://oada/bookmarks"
+          url: 'https://oada/bookmarks'
+          headers: '{"Authorization": "Bearer god"}'
+          expected-status: 200
+          interval: 10
+          timeout: 300
+
+      - uses: mydea/action-wait-for-api@v1
+        if: ${{ always() }}
+        with:
+          url: "http://localhost:${{ job.services.oada.ports['80'] }}/bookmarks"
           headers: '{"Authorization": "Bearer god"}'
           expected-status: 200
           interval: 10
@@ -76,4 +85,10 @@ jobs:
         if: ${{ failure() }}
         shell: bash
         run: |
-          curl -v -H "Authorization: Bearer god" https://oada/bookmarks
+          curl -v -H "Authorization: Bearer god" http://oada/bookmarks
+
+      - continue-on-error: true
+        if: ${{ failure() }}
+        shell: bash
+        run: |
+          curl -v -H "Authorization: Bearer god" http://localhost:${{ job.services.oada.ports['80'] }}/bookmarks
