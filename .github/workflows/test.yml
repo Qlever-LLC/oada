@@ -49,15 +49,18 @@ jobs:
 
     services:
       oada:
+        image: ghcr.io/qlever-llc/oada:sha-${{ needs.setup.outputs.slug }}
+        # Needed for DooD
+        volumes:
+          - "/var/run/docker.sock:/var/run/docker.sock"
         ports:
           - 80
-        image: ghcr.io/qlever-llc/oada:sha-${{ needs.setup.outputs.slug }}
 
     steps:
       # See if it worked
       - uses: mydea/action-wait-for-api@v1
         with:
-          url: "https://localhost:${{ job.services.oada.port }}/bookmarks"
+          url: "https://oada/bookmarks"
           headers: '{"Authorization": "Bearer god"}'
           expected-status: 200
           interval: 10
