@@ -1,9 +1,11 @@
 {
   "search.exclude": {
+    "tags.*": true,
     ".history": true,
     ".dccache": true
   },
   "files.exclude": {
+    "tags.*": true,
     ".history": true,
     ".dccache": true
   },

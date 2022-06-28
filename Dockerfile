@@ -13,7 +13,7 @@
 # limitations under the License.
 
 ARG COMPOSE_VER=alpine-1.29.2
-ARG OADA_VER=3.1.10
+ARG OADA_VER=3.4.1
 
 # Fetch the oada compose file
 FROM docker/compose:$COMPOSE_VER as oada-compose
@@ -45,7 +45,7 @@ ENTRYPOINT ["/usr/bin/dumb-init", "--rewrite", "15:2", "--", "/entrypoint.sh"]
 CMD ["up"]
 
 # Wait for /bookmarks to be up
-HEALTHCHECK --start-period=4m --interval=4s --retries=10 CMD \
+HEALTHCHECK --start-period=4m --interval=5s --retries=50 CMD \
     curl \
     --fail \
     -H "Authorization: Bearer god" \
