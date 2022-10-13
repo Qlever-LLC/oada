@@ -13,7 +13,7 @@
 # limitations under the License.
 
 ARG COMPOSE_VER=alpine-1.29.2
-ARG OADA_VER=3.4.1
+ARG OADA_VER=3.5.1
 
 # Fetch the oada compose file
 FROM docker/compose:$COMPOSE_VER as oada-compose
@@ -55,6 +55,7 @@ HEALTHCHECK --start-period=4m --interval=5s --retries=50 CMD \
 EXPOSE 80
 
 ENV NODE_ENV=development
+ENV REDPANDA_MODE=development
 ENV arangodb__ensureDefaults=true
 
 ARG OADA_VER
