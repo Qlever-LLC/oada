@@ -18,9 +18,9 @@ if test "$1" = 'up'; then
     # Connect this container to the oada pipe
     docker network create qlever-oada_pipe
     docker network connect qlever-oada_pipe "$(hostname)"
-
+    
     # Forward this containers port 80 to OADA port 80
     socat TCP-LISTEN:80,fork TCP:oada-dood:80 &
 fi
 
-docker-compose $@
+docker-compose "$@"

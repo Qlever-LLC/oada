@@ -13,7 +13,7 @@
 # limitations under the License.
 
 ARG COMPOSE_VER=alpine-1.29.2
-ARG OADA_VER=3.5.1
+ARG OADA_VER=3.6.1
 
 # Fetch the oada compose file
 FROM docker/compose:$COMPOSE_VER as oada-compose
