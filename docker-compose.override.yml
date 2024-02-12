@@ -15,7 +15,8 @@
 
 # Create network for piping between the proxy and the "oada" container
 networks:
-  pipe:
+  qlever_oada_pipe:
+    external: true
 
 services:
   startup:
@@ -30,7 +31,7 @@ services:
     expose:
       - "80"
     networks:
-      pipe:
+      qlever_oada_pipe:
         aliases:
           - oada-dood
       http_net:

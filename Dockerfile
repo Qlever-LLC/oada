@@ -12,11 +12,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-ARG COMPOSE_VER=alpine-1.29.2
-ARG OADA_VER=3.6.1
+ARG DOCKER_VER=cli
+ARG OADA_VER=3.10.0
 
 # Fetch the oada compose file
-FROM docker/compose:$COMPOSE_VER as oada-compose
+FROM docker:$DOCKER_VER AS oada-compose
 ARG OADA_VER
 
 RUN if test "${OADA_VER}" = 'latest'; then \
@@ -25,7 +25,7 @@ RUN if test "${OADA_VER}" = 'latest'; then \
     wget https://github.com/OADA/server/releases/download/v${OADA_VER}/docker-compose.yml; \
     fi
 
-FROM docker/compose:$COMPOSE_VER
+FROM docker:$DOCKER_VER
 
 WORKDIR /qlever-oada
 
@@ -42,7 +42,7 @@ RUN apk add --no-cache \
 COPY ./entrypoint.sh /entrypoint.sh
 
 ENTRYPOINT ["/usr/bin/dumb-init", "--rewrite", "15:2", "--", "/entrypoint.sh"]
-CMD ["up"]
+CMD ["up", "--no-log-prefix"]
 
 # Wait for /bookmarks to be up
 HEALTHCHECK --start-period=4m --interval=5s --retries=50 CMD \
