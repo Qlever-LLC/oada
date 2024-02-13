@@ -62,7 +62,7 @@ ENV REDPANDA_MODE=development
 ENV arangodb__ensureDefaults=true
 
 # Use our auth server for OIDC
-ENV OIDC_ISSUER=auth
+ENV OIDC_ISSUER=http://auth/oadaauth/
 
 ARG OADA_VER
 ENV OADA_VERSION=${OADA_VER}
