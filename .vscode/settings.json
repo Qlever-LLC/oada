@@ -10,7 +10,9 @@
     ".dccache": true
   },
   "cSpell.words": [
+    "arangodb",
     "mydea",
+    "OIDC",
     "SNYK"
   ]
 }

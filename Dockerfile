@@ -54,9 +54,15 @@ HEALTHCHECK --start-period=4m --interval=5s --retries=50 CMD \
 
 EXPOSE 80
 
+# Use development mode
 ENV NODE_ENV=development
 ENV REDPANDA_MODE=development
+
+# Load default resources/users/etc.
 ENV arangodb__ensureDefaults=true
+
+# Use our auth server for OIDC
+ENV OIDC_ISSUER=auth
 
 ARG OADA_VER
 ENV OADA_VERSION=${OADA_VER}
