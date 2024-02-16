@@ -52,6 +52,6 @@ services:
   well-known:
     environment:
       OIDC_ISSUER: ~
-  user:
+  users:
     environment:
       OIDC_ISSUER: ~
